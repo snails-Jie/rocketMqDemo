@@ -14,7 +14,10 @@ public class Shop {
     public Shop(String name) {
         this.name = name;
     }
-     
+
+    /**
+     * 折扣后的价格
+     */
     public String getPriceAndDiscountCode(String product){
         double price = caculatePrice(product);
         Discount.Code code =Discount.Code.values()[new Random().nextInt(Discount.Code.values().length)];
