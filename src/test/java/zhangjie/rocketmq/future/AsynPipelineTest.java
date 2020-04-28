@@ -5,10 +5,12 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.logging.SocketHandler;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+/**
+ *
+ */
 public class AsynPipelineTest {
 
     /**
@@ -54,6 +56,15 @@ public class AsynPipelineTest {
     }
 
     /**
+     * 无法预估的延迟（不固定）
+     *  1.现有情况：只有取得所有的商店的返回值才显示价格
+     *    --> 只要有商店返回商品价格就在第一时间显示返回值，不再等待那些未返回的
+     *  2. 解决方案：
+     *    2.1 避免等待创建一个包含所有价格的List创建完成
+     *         --> 直接处理CompletableFuture流
+     *              --> 每个CompletableFuture都在为某个商店执行必要的操作
+     *    2.2 CompletableFuture定义了如何处理CompletableFuture返回的结果
+     *
      * 响应CompletableFuture的completion事件
      *  thenAccept：接收CompletableFuture执行完毕后的返回值做参数
      *   1. 一旦CompletableFuture计算得到结果，它就会返回一个CompletableFuture<Void>
@@ -122,6 +133,9 @@ public class AsynPipelineTest {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * 生成一个由CompletableFuture构成的流
+     */
     public Stream<CompletableFuture<String>> findPricesStream(String product){
         ExecutorService executor = Executors.newFixedThreadPool(4);
         List<Shop> shops = Arrays.asList(new Shop("BestPriice"),
